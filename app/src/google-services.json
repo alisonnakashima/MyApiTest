@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "172572988129",
+    "project_id": "carmapper-466df",
+    "storage_bucket": "carmapper-466df.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172572988129:android:4c5ac4f0c4958a5f285da0",
+        "android_client_info": {
+          "package_name": "com.example.myapitest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "172572988129-84v8ga3431r43c6qs0cck37son6dpgqd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myapitest",
+            "certificate_hash": "3211f684e9b29c87ab56f20d9fc2324d8d3e892f"
+          }
+        },
+        {
+          "client_id": "172572988129-h2e470slhcsbpv09fv4vdinpmh1ivmm0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIZVOVlHzxvkt2zJbkFellRnAzfy8eWqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "172572988129-h2e470slhcsbpv09fv4vdinpmh1ivmm0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

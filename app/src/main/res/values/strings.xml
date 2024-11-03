@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Car Mapper</string>
+    <string name="ddi_brazil">Car Mapper</string>
+    <string name="hint_cellphone">+55 11 912345678</string>
+    <string name="sms_send">Enviar SMS</string>
+    <string name="hint_verify_sms">123456</string>
+    <string name="verify_sms">Verificar código SMS</string>
+    <string name="logout">Logout</string>
+</resources>

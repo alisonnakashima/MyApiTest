@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        app:srcCompat="@drawable/backgroundlogin" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Login"
+        android:textColor="@color/blue_theme"
+        android:textSize="60sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/cellphone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:hint="@string/hint_cellphone"
+        android:inputType="phone"
+        android:maxLength="14"
+        android:minHeight="48dp"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toStartOf="@id/btnSendSms"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnSendSms" />
+
+    <Button
+        android:id="@+id/btnSendSms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="62dp"
+        android:layout_marginEnd="32dp"
+        android:background="@color/blue_theme"
+        android:text="@string/sms_send"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <EditText
+        android:id="@+id/veryfyCode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:hint="@string/hint_verify_sms"
+        android:inputType="number"
+        android:maxLength="6"
+        android:minHeight="48dp"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/btnVerifySms"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnVerifySms"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btnVerifySms"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:background="@color/blue_theme"
+        android:text="@string/verify_sms"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/btnSendSms"
+        app:layout_constraintTop_toBottomOf="@id/btnSendSms"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/googleSignInButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="32dp"
+        android:background="@color/blue_theme"
+        android:text="Google Sign in"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
