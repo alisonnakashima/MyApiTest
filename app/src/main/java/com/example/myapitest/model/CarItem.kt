@@ -2,7 +2,7 @@ package com.example.myapitest.model
 
 data class CarDetails (
     val id: String,
-    val imageUrl: String,
+    val imageUrl: String?,
     val year: String,
     val name: String,
     val license: String,
@@ -11,7 +11,7 @@ data class CarDetails (
 
 data class CarItem (
     val id: String,
-    val values: CarDetails
+    val value: CarDetails
 )
 
 

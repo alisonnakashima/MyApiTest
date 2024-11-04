@@ -13,6 +13,9 @@ import com.example.myapitest.model.CarItem
 import com.example.myapitest.service.Result
 import com.example.myapitest.service.RetrofitClient
 import com.example.myapitest.service.safeApiCall
+import com.example.myapitest.ui.CircleTransform
+import com.example.myapitest.ui.loadUrl
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,9 +64,10 @@ class ItemDetailActivity : AppCompatActivity() {
     }
 
     private fun handleSucess (){
-        binding.carNameTv.text = "${carItem.values.name}"
-        binding.yearTv.text = "${carItem.values.year}"
-        binding.yearTv.text = "${carItem.values.license}"
+        binding.carNameTv.text = "${carItem.value.name}"
+        binding.yearTv.text = "${carItem.value.year}"
+        binding.licenseTv.text = "${carItem.value.license}"
+        carItem.value.imageUrl?.let { binding.imageIv.loadUrl(it) }
 
     }
 

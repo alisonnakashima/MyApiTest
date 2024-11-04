@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_logout -> {
                 FirebaseAuth.getInstance().signOut()
                 val intent = LoginActivity.newIntent(this)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
                 true
