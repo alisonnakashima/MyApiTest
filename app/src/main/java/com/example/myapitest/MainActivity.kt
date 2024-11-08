@@ -108,7 +108,25 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
         }
+        checkLocationPermissionAndRequest()
+    }
 
+    private fun checkLocationPermissionAndRequest(){
+        when {
+            ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                getLastLocation()
+            }
+            shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+            shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_COARSE_LOCATION) -> {
+                locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+            else ->{
+                locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
     }
 
     private fun getLastLocation(){
@@ -120,6 +138,12 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.lastLocation.addOnCompleteListener{task: Task<Location> ->
             if (task.isSuccessful && task.result != null) {
                 val location = task.result
+
+                Toast.makeText(
+                    this,
+                    "Lat: ${location.latitude} Long: ${location.longitude}",
+                    Toast.LENGTH_SHORT)
+                    .show()
             } else {
                 Toast.makeText(
                     this,
