@@ -24,6 +24,6 @@ interface ApiService {
     suspend fun addCar(@Body item: CarDetails): CarItem
 
     @PATCH("car/{id}")
-    suspend fun updateCar(@Path("id") id: String, @Body item: CarDetails): CarItem
+    suspend fun updateCar(@Path("id") id: String, @Body item: CarDetails): CarDetails
 
 }

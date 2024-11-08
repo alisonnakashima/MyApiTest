@@ -1,12 +1,12 @@
 package com.example.myapitest.model
 
-data class CarDetails (
+data class CarDetails(
     val id: String,
     val imageUrl: String?,
     val year: String,
-    val name: String,
+    var name: String,
     val license: String,
-    val place: ItemLocation?
+    var place: ItemLocation?
 )
 
 data class CarItem (

@@ -6,4 +6,13 @@
     <string name="hint_verify_sms">123456</string>
     <string name="verify_sms">Verificar código SMS</string>
     <string name="logout">Logout</string>
+    <string name="delete_success">Item removido com sucesso.</string>
+    <string name="delete_error">Erro ao remover dados.</string>
+    <string name="error_validate_form">Por favor, preencha o campo : %1$s.</string>
+    <string name="create_sucess">Cadastro  %1$s adicionado com sucesso!</string>
+    <string name="create_error">Erro ao criar novo item.</string>
+    <string name="update_success">Item atualizado com sucesso.</string>
+    <string name="update_error">Erro ao atualizar dados.</string>
+    <string name="denied_permission">Permissão de localização negada.</string>
+    <string name="unknown_error">Error desconhecido.</string>
 </resources>

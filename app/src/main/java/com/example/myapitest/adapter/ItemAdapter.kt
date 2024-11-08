@@ -38,8 +38,6 @@ class ItemAdapter (
 
     override fun getItemCount(): Int = cars.size
 
-
-
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val car = cars[position]
         holder.itemView.setOnClickListener{
