@@ -55,7 +55,6 @@ android {
 }
 
 kapt {
-
     // Define o diretório onde o Room exportará o esquema do banco de dados
     arguments {
         arg("room.schemaLocation", "$projectDir/schemas")

@@ -19,6 +19,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -28,6 +29,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapitest.adapter.ItemAdapter
+import com.example.myapitest.database.DatabaseBuilder
+import com.example.myapitest.database.model.UserLocation
 import com.example.myapitest.databinding.ActivityMainBinding
 import com.example.myapitest.model.CarDetails
 import com.example.myapitest.model.CarItem
@@ -138,12 +141,14 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.lastLocation.addOnCompleteListener{task: Task<Location> ->
             if (task.isSuccessful && task.result != null) {
                 val location = task.result
+                val userLocation = UserLocation(latitude = location.latitude, longitude = location.longitude)
+                Log.d("HELLO_WORLD", "Lat: ${userLocation.latitude} Long: ${userLocation.longitude}") // removido o toast para inserir log de debug
+                CoroutineScope(Dispatchers.IO).launch {
+                    DatabaseBuilder.getInstance()
+                        .userLocationDao()
+                        .insert(userLocation)
+                }
 
-                Toast.makeText(
-                    this,
-                    "Lat: ${location.latitude} Long: ${location.longitude}",
-                    Toast.LENGTH_SHORT)
-                    .show()
             } else {
                 Toast.makeText(
                     this,
