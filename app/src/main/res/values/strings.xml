@@ -13,6 +13,9 @@
     <string name="create_error">Erro ao criar novo item.</string>
     <string name="update_success">Item atualizado com sucesso.</string>
     <string name="update_error">Erro ao atualizar dados.</string>
-    <string name="denied_permission">Permissão de localização negada.</string>
+    <string name="location_denied_permission">Permissão de localização negada.</string>
+    <string name="camera_denied_permission">Permissão acesso à camera negada.</string>
     <string name="unknown_error">Error desconhecido.</string>
+    <string name="upload_image_error">Error ao enviar a imagem.</string>
+    <string name="no_location_selected">Nenhuma localização selecionada.</string>
 </resources>

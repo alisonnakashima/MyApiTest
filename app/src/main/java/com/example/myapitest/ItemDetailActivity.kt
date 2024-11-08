@@ -75,11 +75,10 @@ class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback{
         binding.saveEditedCTA.setOnClickListener{
             saveEditedItem()
         }
+
         binding.carNameTv.setOnClickListener{
             editName()
         }
-
-
     }
 
     private fun setupGoogleMap(){
@@ -144,7 +143,7 @@ class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback{
         binding.carNameEt.visibility = View.GONE
         binding.carNameTv.visibility = View.VISIBLE
         binding.carNameTv.text = binding.carNameEt.text.toString()
-        val teste = binding.carNameEt.text.toString()
+//        val teste = binding.carNameEt.text.toString()
 
         // Fecha o teclado
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -156,8 +155,8 @@ class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback{
         carItem.value.copy(license = binding.licenseTv.text.toString())
 
 //        carItem.value.copy(place = binding.licenseTv.text.toString())
-        var locationEmpty = ItemLocation(lat= ((-43.172).toFloat()), long= ((-43.172).toFloat()))
-        carItem.value.place = ItemLocation(lat= ((-43.172).toFloat()), long= ((-43.172).toFloat()))
+//        var locationEmpty = ItemLocation(lat= ((-43.172).toFloat()), long= ((-43.172).toFloat()))
+//        carItem.value.place = ItemLocation(lat= ((-43.172).toFloat()), long= ((-43.172).toFloat()))
 
         CoroutineScope(Dispatchers.IO).launch {
             val result = safeApiCall {

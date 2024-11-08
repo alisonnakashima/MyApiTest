@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    R.string.denied_permission,
+                    R.string.location_denied_permission,
                     Toast.LENGTH_LONG)
                     .show()
             }

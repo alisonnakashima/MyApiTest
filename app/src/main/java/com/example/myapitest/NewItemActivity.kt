@@ -1,17 +1,25 @@
 package com.example.myapitest
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.example.myapitest.databinding.ActivityNewItemBinding
 import com.example.myapitest.model.CarDetails
 import com.example.myapitest.model.ItemLocation
@@ -28,12 +36,18 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.common.collect.MapMaker
+import com.google.firebase.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.security.SecureRandom
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.UUID
 
 class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -45,6 +59,16 @@ class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var imageUri: Uri
     private var imageFile: File? = null
+
+    private val cameraLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val imageBitmap = BitmapFactory.decodeFile(imageFile!!.path)
+            uploadImageToFirebase(imageBitmap)
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +94,37 @@ class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
                     .title("Lat: ${latLng.latitude}, Long: ${latLng.longitude}")
             )
         }
+    }
+
+    private fun uploadImageToFirebase(bitmap: Bitmap) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imagesRef = storageRef.child("imamges/${UUID.randomUUID()}.jpg")
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+
+        val data = baos.toByteArray()
+
+        binding.loadImageProgress.visibility = View.VISIBLE
+        binding.CameraCta.isEnabled = false
+        binding.saveCta.isEnabled = false
+
+        val updloadTask = imagesRef.putBytes(data)
+        updloadTask.addOnFailureListener{
+            binding.loadImageProgress.visibility = View.GONE
+            binding.CameraCta.isEnabled = true
+            binding.saveCta.isEnabled = true
+            showToast(R.string.upload_image_error.toString())
+
+        }.addOnSuccessListener {
+            binding.loadImageProgress.visibility = View.GONE
+            binding.CameraCta.isEnabled = true
+            binding.saveCta.isEnabled = true
+            imagesRef.downloadUrl.addOnSuccessListener { uri ->
+                binding.imageUrl.setText(uri.toString())
+            }
+        }
+
     }
 
     private fun setupGoogleMap(){
@@ -116,13 +171,52 @@ class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 loadCurrentLocation()
             } else {
-                Toast.makeText(
-                    this,
-                    R.string.denied_permission,
-                    Toast.LENGTH_SHORT
-                ).show()
+                showToast((R.string.location_denied_permission.toString()))
+            }
+        }else if (requestCode == CAMERA_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                openCamera()
+            } else {
+                showToast(R.string.camera_denied_permission.toString())
             }
         }
+    }
+
+    private fun openCamera(){
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        imageUri = createImageUri()
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        cameraLauncher.launch(intent)
+    }
+
+    private fun createImageUri() : Uri {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_${timeStamp}_"
+
+        // Obtém o diretório de armazenamento externo para imagens
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
+        // Cria um arquivo de imagem
+        imageFile = File.createTempFile(
+            imageFileName,  /* prefix */
+            ".jpg",         /* suffix */
+            storageDir      /* directory */
+        )
+
+        // Retorna o URI para o arquivo
+        return FileProvider.getUriForFile(
+            this,  // Contexto
+            "com.example.myapitest.fileprovider", // Autoridade
+            imageFile!! // O arquivo
+        )
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(
+            this,
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun setupView() {
@@ -132,9 +226,30 @@ class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
+
         binding.saveCta.setOnClickListener{
             save()
         }
+
+        binding.CameraCta.setOnClickListener{
+            takePicture()
+        }
+    }
+
+    private fun takePicture() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openCamera()
+        } else {
+            requestCameraPermission()
+        }
+    }
+
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(android.Manifest.permission.CAMERA),
+            CAMERA_REQUEST_CODE
+        )
     }
 
     private fun save() {
@@ -142,6 +257,7 @@ class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
         val itemPosition = selectedMapMarker?.position?.let{
             ItemLocation(lat = it.latitude.toFloat(), long = it.longitude.toFloat())
         }
+
         CoroutineScope(Dispatchers.IO).launch {
             val id = SecureRandom().nextInt().toString()
             // variável provisória para verificação posterior e inserção da location via GPS
@@ -202,6 +318,7 @@ class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object{
 
         private const val LOCATION_PERMISSION_REQUEST_CODE = 100
+        private const val CAMERA_REQUEST_CODE = 101
 
         fun newIntent (context: Context) =
             Intent(context, NewItemActivity::class.java)
