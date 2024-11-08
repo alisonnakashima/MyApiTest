@@ -139,17 +139,21 @@ class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun save() {
         if (!validateForm()) return
+        val itemPosition = selectedMapMarker?.position?.let{
+            ItemLocation(lat = it.latitude.toFloat(), long = it.longitude.toFloat())
+        }
         CoroutineScope(Dispatchers.IO).launch {
             val id = SecureRandom().nextInt().toString()
             // variável provisória para verificação posterior e inserção da location via GPS
-            val locationEmpty= ItemLocation(lat= ((-43.172).toFloat()), long= ((-43.172).toFloat()))
+            //val locationEmpty= ItemLocation(lat= ((-43.172).toFloat()), long= ((-43.172).toFloat()))
+
             val itemValue = CarDetails (
                 id,
                 binding.imageUrl.text.toString(),
                 binding.carYear.text.toString(),
                 binding.carName.text.toString(),
                 binding.carLicense.text.toString(),
-                locationEmpty
+                itemPosition
             )
             val result = safeApiCall { RetrofitClient.apiService.addCar(itemValue) }
             withContext(Dispatchers.Main) {
