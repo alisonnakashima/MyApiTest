@@ -1,30 +1,128 @@
 package com.example.myapitest
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.myapitest.databinding.ActivityNewItemBinding
 import com.example.myapitest.model.CarDetails
 import com.example.myapitest.model.ItemLocation
 import com.example.myapitest.service.Result
 import com.example.myapitest.service.RetrofitClient
 import com.example.myapitest.service.safeApiCall
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.common.collect.MapMaker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.security.SecureRandom
 
-class NewItemActivity : AppCompatActivity() {
+class NewItemActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var binding: ActivityNewItemBinding
+
+    private lateinit var mMap: GoogleMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var selectedMapMarker: Marker? = null
+
+    private lateinit var imageUri: Uri
+    private var imageFile: File? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        setupGoogleMap()
         setupView()
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+        binding.googleMapContentOnAddCar.visibility = View.VISIBLE
+        getDeviceLocation()
+        mMap.setOnMapClickListener { latLng: LatLng ->
+            // Limpar marcador anterior, se existir
+            selectedMapMarker?.remove()
+
+            selectedMapMarker = mMap.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .draggable(true)
+                    .title("Lat: ${latLng.latitude}, Long: ${latLng.longitude}")
+            )
+        }
+    }
+
+    private fun setupGoogleMap(){
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapOnAddCar) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    private fun getDeviceLocation() {
+        //CHECKING PERMISSION
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            loadCurrentLocation()
+        } else {
+            //REQUEST PERMISSION WHEN IT´S DENIED
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun loadCurrentLocation() {
+        mMap.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location ->
+            val currentLocation = LatLng(location.latitude, location.longitude)
+            mMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    currentLocation,
+                    17f
+                )
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                loadCurrentLocation()
+            } else {
+                Toast.makeText(
+                    this,
+                    R.string.denied_permission,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun setupView() {
@@ -74,7 +172,6 @@ class NewItemActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     private fun validateForm(): Boolean {
@@ -99,7 +196,12 @@ class NewItemActivity : AppCompatActivity() {
 
 
     companion object{
+
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 100
+
         fun newIntent (context: Context) =
             Intent(context, NewItemActivity::class.java)
     }
+
+
 }

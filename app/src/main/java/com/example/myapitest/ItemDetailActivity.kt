@@ -20,6 +20,12 @@ import com.example.myapitest.service.RetrofitClient
 import com.example.myapitest.service.safeApiCall
 import com.example.myapitest.ui.CircleTransform
 import com.example.myapitest.ui.loadUrl
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +34,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.wait
 
-class ItemDetailActivity : AppCompatActivity() {
+class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback{
+
 
     private lateinit var binding: ActivityItemDetailBinding
     private lateinit var carItem: CarItem
     private lateinit var carDetails: CarDetails
+
+    private lateinit var mMap:GoogleMap
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +50,14 @@ class ItemDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupView()
         loadItem()
+        setupGoogleMap()
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+        if (::carItem.isInitialized){
+            loadItemLocationInGoogleMap()
+        }
     }
 
     private fun setupView() {
@@ -65,6 +82,11 @@ class ItemDetailActivity : AppCompatActivity() {
 
     }
 
+    private fun setupGoogleMap(){
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
     private fun loadItem(){
         val itemId = intent.getStringExtra(ARG_ID) ?: ""
 
@@ -88,7 +110,7 @@ class ItemDetailActivity : AppCompatActivity() {
         binding.yearTv.text = "${carItem.value.year}"
         binding.licenseTv.text = "${carItem.value.license}"
         carItem.value.imageUrl?.let { binding.imageIv.loadUrl(it) }
-
+        loadItemLocationInGoogleMap()
     }
 
     private fun deleteItem() {
@@ -188,5 +210,28 @@ class ItemDetailActivity : AppCompatActivity() {
                 putExtra(ARG_ID, itemId)
             }
     }
+
+
+    private fun loadItemLocationInGoogleMap() {
+        carItem.value.place?.let {
+            binding.googleMapContent.visibility = View.VISIBLE
+            val latLong = LatLng(it.lat.toDouble(), it.long.toDouble())
+            Log.i("latlong", "${it.lat}, ${it.long}")
+            // Adiciona pin no Map
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(latLong)
+                    .title("Local Selecionado")
+            )
+            // Move a camera do Map para a mesma localização do Pin
+            mMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    latLong,
+                    17f
+                )
+            )
+        }
+    }
+
 
 }
